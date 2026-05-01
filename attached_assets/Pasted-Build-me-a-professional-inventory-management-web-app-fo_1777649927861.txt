@@ -1,0 +1,198 @@
+Build me a professional inventory management web app for Basketball Africa League event operations.
+
+The current system is a spreadsheet matrix with:
+- Departments such as BB Ops, Printers and Monitors, Court, Production Box, Offices/Lockers, Miscellaneous, and Branding
+- Inventory items listed under each department
+- Market columns such as Morocco, Rwanda and South Africa
+- Quantities, “x”, TBC, notes, and blank cells
+- Items that need to be tracked per year and per market
+
+The app must make this more structured, searchable and easy to update on-site.
+
+APP NAME:
+BAL Market Inventory Tracker
+
+CORE PURPOSE:
+Create a reusable inventory system for each BAL season and each market/country, where the team can:
+- Track what inventory exists per market
+- Add photos of items
+- Update quantities
+- mark condition/status
+- Add notes
+- Compare inventory between markets and years
+- Prepare load-in, active event, load-out and storage reports
+
+MAIN STRUCTURE:
+1. Season / Year
+   Example: 2026, 2027, 2028
+
+2. Market
+   Example:
+   - South Africa
+   - Morocco
+   - Rwanda
+   - Other future markets
+
+3. Department
+   Example:
+   - BB Ops
+   - Printers and Monitors
+   - Court
+   - Production Box
+   - Offices / Lockers
+   - Miscellaneous
+   - Branding
+
+4. Inventory Item
+   Each item must have:
+   - Item name
+   - Department
+   - Season/year
+   - Market
+   - Planned quantity
+   - Actual quantity
+   - Unit type: item, box, set, roll, banner, sticker, hardware, print, etc.
+   - Status: Needed, Packed, In Transit, On Site, Installed, Returned, Damaged, Missing, Stored
+   - Condition: New, Good, Used, Damaged, Needs Repair
+   - Reusable: Yes / No
+   - Generic or Market-specific
+   - Supplier
+   - Storage location
+   - Notes
+   - Photo upload
+   - Last updated date
+   - Updated by
+
+IMPORTANT FEATURES:
+- Dashboard showing total items per market, missing items, damaged items, reusable items and items still marked TBC
+- Ability to filter by season, market, department, supplier, status and reusable items
+- Search bar for item names
+- Add new item form
+- Edit item form
+- Duplicate items from one market/year to another
+- Bulk import from CSV or pasted spreadsheet data
+- Export report to CSV/PDF
+- Photo capture/upload for each item, especially for storage, condition and installation proof
+- Mobile-friendly design for use inside arenas and storage areas
+- Simple status colour coding:
+  - Needed = red
+  - Packed = orange
+  - In Transit = blue
+  - On Site = purple
+  - Installed = green
+  - Returned = grey
+  - Damaged = dark red
+  - Missing = black
+  - Stored = teal
+
+USER EXPERIENCE:
+The app must feel like an event operations tool, not a normal stock app.
+Use a clean, professional sports-event look.
+Use BAL-inspired styling:
+- Dark background
+- Yellow, red, orange and white accents
+- Card-based dashboard
+- Clear tables
+- Big mobile-friendly buttons
+- Easy “Update Quantity” and “Add Photo” buttons
+
+PAGES REQUIRED:
+1. Dashboard
+   - Summary cards
+   - Market selector
+   - Season selector
+   - Department overview
+   - Alerts for missing/damaged/TBC items
+
+2. Inventory List
+   - Table view of all items
+   - Filters
+   - Search
+   - Quick edit status and quantity
+   - Thumbnail photo preview
+
+3. Item Detail Page
+   - Full item information
+   - Photos gallery
+   - Notes/history log
+   - Update status
+   - Update quantity
+   - Add storage notes
+
+4. Add / Edit Item Page
+   - Form with all fields
+   - Photo upload
+   - Save button
+
+5. Market Comparison Page
+   - Compare South Africa vs Morocco vs Rwanda
+   - Show quantity differences
+   - Show missing items
+   - Show reusable items that can move between markets
+
+6. Reports Page
+   - Export market inventory
+   - Export damaged/missing report
+   - Export reusable branding report
+   - Export load-out checklist
+   - Export storage list
+
+DATA MODEL:
+Create a database with tables for:
+- seasons
+- markets
+- departments
+- items
+- item_photos
+- item_history
+- suppliers
+- storage_locations
+
+TECH REQUIREMENTS:
+Use a modern full-stack setup suitable for Replit.
+Use:
+- React frontend
+- Tailwind CSS
+- Supabase or PostgreSQL database
+- Authentication/login
+- Image upload storage
+- Responsive design
+- CSV import/export
+
+SPECIAL BAL USE CASES:
+The app must support:
+- Branding inventory such as totems, telescopic banners, fence wraps, A-frames, decals, room signs and court vinyl
+- Court items such as stanchions, nets, mops, pads and hoops
+- Production box items such as tape, cable ties, lanyards, scissors and markers
+- Printers, monitors, ink and toner tracking
+- Reusable generic branding vs sponsor/season-specific branding
+- Load-in and load-out checks
+- Storage planning after each market
+
+Build the first working version with demo data based on these example departments and markets:
+- South Africa
+- Morocco
+- Rwanda
+
+Use sample items such as:
+- Laundry Baskets
+- Dryer
+- Washing Machine
+- Fans
+- Monitors
+- HP Printers
+- Court
+- Stanchions
+- Ball Racks
+- Cable Ties
+- BAL Lanyards
+- Flip Charts
+- Totems
+- Telescopic Banners
+- Fence Wrap Generic Banners
+- Room Labels
+- A-Frames
+- Ticket Wallets
+- Hotel Pull-Up Banners
+
+The final app must be practical for a live event team to use on laptops and phones during BAL markets.

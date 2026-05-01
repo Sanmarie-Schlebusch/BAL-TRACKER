@@ -3,20 +3,33 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: BAL Market Inventory Tracker API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: seasons
+    description: Season operations
+  - name: markets
+    description: Market operations
+  - name: departments
+    description: Department operations
+  - name: items
+    description: Inventory item operations
+  - name: suppliers
+    description: Supplier operations
+  - name: storage_locations
+    description: Storage location operations
+  - name: dashboard
+    description: Dashboard summary operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,675 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /seasons:
+    get:
+      operationId: listSeasons
+      tags: [seasons]
+      summary: List all seasons
+      responses:
+        "200":
+          description: List of seasons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Season"
+    post:
+      operationId: createSeason
+      tags: [seasons]
+      summary: Create a season
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSeasonBody"
+      responses:
+        "201":
+          description: Created season
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Season"
+
+  /seasons/{id}:
+    get:
+      operationId: getSeason
+      tags: [seasons]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Season
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Season"
+    put:
+      operationId: updateSeason
+      tags: [seasons]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSeasonBody"
+      responses:
+        "200":
+          description: Updated season
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Season"
+    delete:
+      operationId: deleteSeason
+      tags: [seasons]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /markets:
+    get:
+      operationId: listMarkets
+      tags: [markets]
+      summary: List all markets
+      responses:
+        "200":
+          description: List of markets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Market"
+    post:
+      operationId: createMarket
+      tags: [markets]
+      summary: Create a market
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMarketBody"
+      responses:
+        "201":
+          description: Created market
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Market"
+
+  /markets/{id}:
+    get:
+      operationId: getMarket
+      tags: [markets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Market
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Market"
+    put:
+      operationId: updateMarket
+      tags: [markets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMarketBody"
+      responses:
+        "200":
+          description: Updated market
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Market"
+    delete:
+      operationId: deleteMarket
+      tags: [markets]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /departments:
+    get:
+      operationId: listDepartments
+      tags: [departments]
+      summary: List all departments
+      responses:
+        "200":
+          description: List of departments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Department"
+    post:
+      operationId: createDepartment
+      tags: [departments]
+      summary: Create a department
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDepartmentBody"
+      responses:
+        "201":
+          description: Created department
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+
+  /departments/{id}:
+    get:
+      operationId: getDepartment
+      tags: [departments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Department
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+    put:
+      operationId: updateDepartment
+      tags: [departments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDepartmentBody"
+      responses:
+        "200":
+          description: Updated department
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Department"
+    delete:
+      operationId: deleteDepartment
+      tags: [departments]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /suppliers:
+    get:
+      operationId: listSuppliers
+      tags: [suppliers]
+      summary: List all suppliers
+      responses:
+        "200":
+          description: List of suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Supplier"
+    post:
+      operationId: createSupplier
+      tags: [suppliers]
+      summary: Create a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSupplierBody"
+      responses:
+        "201":
+          description: Created supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+
+  /suppliers/{id}:
+    delete:
+      operationId: deleteSupplier
+      tags: [suppliers]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /storage-locations:
+    get:
+      operationId: listStorageLocations
+      tags: [storage_locations]
+      summary: List all storage locations
+      responses:
+        "200":
+          description: List of storage locations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StorageLocation"
+    post:
+      operationId: createStorageLocation
+      tags: [storage_locations]
+      summary: Create a storage location
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStorageLocationBody"
+      responses:
+        "201":
+          description: Created storage location
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StorageLocation"
+
+  /storage-locations/{id}:
+    delete:
+      operationId: deleteStorageLocation
+      tags: [storage_locations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /items:
+    get:
+      operationId: listItems
+      tags: [items]
+      summary: List inventory items with optional filters
+      parameters:
+        - name: seasonId
+          in: query
+          schema:
+            type: integer
+        - name: marketId
+          in: query
+          schema:
+            type: integer
+        - name: departmentId
+          in: query
+          schema:
+            type: integer
+        - name: supplierId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: condition
+          in: query
+          schema:
+            type: string
+        - name: reusable
+          in: query
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of inventory items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InventoryItem"
+    post:
+      operationId: createItem
+      tags: [items]
+      summary: Create an inventory item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateItemBody"
+      responses:
+        "201":
+          description: Created item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+
+  /items/bulk-import:
+    post:
+      operationId: bulkImportItems
+      tags: [items]
+      summary: Bulk import items from CSV data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BulkImportBody"
+      responses:
+        "200":
+          description: Import result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkImportResult"
+
+  /items/{id}:
+    get:
+      operationId: getItem
+      tags: [items]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Inventory item with photos and history
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItemDetail"
+    put:
+      operationId: updateItem
+      tags: [items]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateItemBody"
+      responses:
+        "200":
+          description: Updated item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+    delete:
+      operationId: deleteItem
+      tags: [items]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /items/{id}/duplicate:
+    post:
+      operationId: duplicateItem
+      tags: [items]
+      summary: Duplicate an item to another market/season
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DuplicateItemBody"
+      responses:
+        "201":
+          description: Duplicated item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InventoryItem"
+
+  /items/{id}/photos:
+    post:
+      operationId: addItemPhoto
+      tags: [items]
+      summary: Add a photo to an item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddPhotoBody"
+      responses:
+        "201":
+          description: Added photo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemPhoto"
+
+  /items/{id}/photos/{photoId}:
+    delete:
+      operationId: deleteItemPhoto
+      tags: [items]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /items/{id}/history:
+    get:
+      operationId: getItemHistory
+      tags: [items]
+      summary: Get history log for an item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Item history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemHistory"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      parameters:
+        - name: seasonId
+          in: query
+          schema:
+            type: integer
+        - name: marketId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/market-comparison:
+    get:
+      operationId: getMarketComparison
+      tags: [dashboard]
+      summary: Compare inventory across markets for a season
+      parameters:
+        - name: seasonId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Market comparison data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketComparisonRow"
+
+  /dashboard/department-breakdown:
+    get:
+      operationId: getDepartmentBreakdown
+      tags: [dashboard]
+      summary: Get item counts and status breakdown by department
+      parameters:
+        - name: seasonId
+          in: query
+          schema:
+            type: integer
+        - name: marketId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Department breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DepartmentBreakdown"
+
+  /reports/export:
+    get:
+      operationId: exportReport
+      tags: [dashboard]
+      summary: Export filtered inventory as CSV data
+      parameters:
+        - name: seasonId
+          in: query
+          schema:
+            type: integer
+        - name: marketId
+          in: query
+          schema:
+            type: integer
+        - name: departmentId
+          in: query
+          schema:
+            type: integer
+        - name: reportType
+          in: query
+          schema:
+            type: string
+            enum: [full, damaged_missing, reusable, load_out, storage]
+      responses:
+        "200":
+          description: CSV export data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExportResult"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +713,447 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    Season:
+      type: object
+      properties:
+        id:
+          type: integer
+        year:
+          type: integer
+        label:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, year, label, isActive, createdAt]
+
+    CreateSeasonBody:
+      type: object
+      properties:
+        year:
+          type: integer
+        label:
+          type: string
+        isActive:
+          type: boolean
+      required: [year, label]
+
+    Market:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+        createdAt:
+          type: string
+      required: [id, name, country, createdAt]
+
+    CreateMarketBody:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        region:
+          type: string
+      required: [name, country]
+
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+      required: [id, name, createdAt]
+
+    CreateDepartmentBody:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required: [name]
+
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        contact:
+          type: string
+        createdAt:
+          type: string
+      required: [id, name, createdAt]
+
+    CreateSupplierBody:
+      type: object
+      properties:
+        name:
+          type: string
+        contact:
+          type: string
+      required: [name]
+
+    StorageLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+      required: [id, name, createdAt]
+
+    CreateStorageLocationBody:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required: [name]
+
+    InventoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        departmentId:
+          type: integer
+        departmentName:
+          type: string
+        seasonId:
+          type: integer
+        seasonLabel:
+          type: string
+        marketId:
+          type: integer
+        marketName:
+          type: string
+        plannedQuantity:
+          type: integer
+        actualQuantity:
+          type: integer
+        unitType:
+          type: string
+        status:
+          type: string
+        condition:
+          type: string
+        reusable:
+          type: boolean
+        isGeneric:
+          type: boolean
+        supplierId:
+          type: integer
+        supplierName:
+          type: string
+        storageLocationId:
+          type: integer
+        storageLocationName:
+          type: string
+        notes:
+          type: string
+        thumbnailUrl:
+          type: string
+        lastUpdatedAt:
+          type: string
+        updatedBy:
+          type: string
+        createdAt:
+          type: string
+      required: [id, name, departmentId, seasonId, marketId, plannedQuantity, actualQuantity, unitType, status, condition, reusable, isGeneric, lastUpdatedAt, createdAt]
+
+    InventoryItemDetail:
+      allOf:
+        - $ref: "#/components/schemas/InventoryItem"
+        - type: object
+          properties:
+            photos:
+              type: array
+              items:
+                $ref: "#/components/schemas/ItemPhoto"
+            history:
+              type: array
+              items:
+                $ref: "#/components/schemas/ItemHistory"
+          required: [photos, history]
+
+    CreateItemBody:
+      type: object
+      properties:
+        name:
+          type: string
+        departmentId:
+          type: integer
+        seasonId:
+          type: integer
+        marketId:
+          type: integer
+        plannedQuantity:
+          type: integer
+        actualQuantity:
+          type: integer
+        unitType:
+          type: string
+        status:
+          type: string
+        condition:
+          type: string
+        reusable:
+          type: boolean
+        isGeneric:
+          type: boolean
+        supplierId:
+          type: integer
+        storageLocationId:
+          type: integer
+        notes:
+          type: string
+        updatedBy:
+          type: string
+      required: [name, departmentId, seasonId, marketId, plannedQuantity, actualQuantity, unitType, status, condition, reusable, isGeneric]
+
+    UpdateItemBody:
+      type: object
+      properties:
+        name:
+          type: string
+        departmentId:
+          type: integer
+        seasonId:
+          type: integer
+        marketId:
+          type: integer
+        plannedQuantity:
+          type: integer
+        actualQuantity:
+          type: integer
+        unitType:
+          type: string
+        status:
+          type: string
+        condition:
+          type: string
+        reusable:
+          type: boolean
+        isGeneric:
+          type: boolean
+        supplierId:
+          type: integer
+        storageLocationId:
+          type: integer
+        notes:
+          type: string
+        updatedBy:
+          type: string
+
+    DuplicateItemBody:
+      type: object
+      properties:
+        targetMarketId:
+          type: integer
+        targetSeasonId:
+          type: integer
+      required: [targetMarketId, targetSeasonId]
+
+    BulkImportBody:
+      type: object
+      properties:
+        csvData:
+          type: string
+        seasonId:
+          type: integer
+        marketId:
+          type: integer
+      required: [csvData, seasonId, marketId]
+
+    BulkImportResult:
+      type: object
+      properties:
+        imported:
+          type: integer
+        failed:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: string
+      required: [imported, failed, errors]
+
+    AddPhotoBody:
+      type: object
+      properties:
+        url:
+          type: string
+        caption:
+          type: string
+        photoType:
+          type: string
+      required: [url]
+
+    ItemPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        url:
+          type: string
+        caption:
+          type: string
+        photoType:
+          type: string
+        createdAt:
+          type: string
+      required: [id, itemId, url, createdAt]
+
+    ItemHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        itemId:
+          type: integer
+        field:
+          type: string
+        oldValue:
+          type: string
+        newValue:
+          type: string
+        changedBy:
+          type: string
+        changedAt:
+          type: string
+      required: [id, itemId, field, newValue, changedAt]
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+        missingItems:
+          type: integer
+        damagedItems:
+          type: integer
+        reusableItems:
+          type: integer
+        onSiteItems:
+          type: integer
+        packedItems:
+          type: integer
+        inTransitItems:
+          type: integer
+        neededItems:
+          type: integer
+        storedItems:
+          type: integer
+        returnedItems:
+          type: integer
+        installedItems:
+          type: integer
+        statusBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusCount"
+        recentActivity:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemHistory"
+      required: [totalItems, missingItems, damagedItems, reusableItems, onSiteItems, packedItems, inTransitItems, neededItems, storedItems, returnedItems, installedItems, statusBreakdown, recentActivity]
+
+    StatusCount:
+      type: object
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+      required: [status, count]
+
+    MarketComparisonRow:
+      type: object
+      properties:
+        itemName:
+          type: string
+        departmentName:
+          type: string
+        unitType:
+          type: string
+        reusable:
+          type: boolean
+        markets:
+          type: array
+          items:
+            $ref: "#/components/schemas/MarketQuantity"
+      required: [itemName, departmentName, unitType, reusable, markets]
+
+    MarketQuantity:
+      type: object
+      properties:
+        marketId:
+          type: integer
+        marketName:
+          type: string
+        plannedQuantity:
+          type: integer
+        actualQuantity:
+          type: integer
+        status:
+          type: string
+      required: [marketId, marketName, plannedQuantity, actualQuantity, status]
+
+    DepartmentBreakdown:
+      type: object
+      properties:
+        departmentId:
+          type: integer
+        departmentName:
+          type: string
+        totalItems:
+          type: integer
+        missingItems:
+          type: integer
+        damagedItems:
+          type: integer
+        onSiteItems:
+          type: integer
+        statusCounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusCount"
+      required: [departmentId, departmentName, totalItems, missingItems, damagedItems, onSiteItems, statusCounts]
+
+    ExportResult:
+      type: object
+      properties:
+        csvData:
+          type: string
+        filename:
+          type: string
+        rowCount:
+          type: integer
+      required: [csvData, filename, rowCount]
