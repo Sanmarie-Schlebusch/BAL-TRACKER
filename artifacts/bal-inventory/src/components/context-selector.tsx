@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useListSeasons, useListMarkets } from "@workspace/api-client-react";
 import { useAppState } from "@/hooks/use-app-state";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,15 +10,18 @@ export function ContextSelector() {
   const { data: seasons, isLoading: loadingSeasons } = useListSeasons();
   const { data: markets, isLoading: loadingMarkets } = useListMarkets();
 
-  // Set defaults if not set and data is loaded
-  if (seasons && seasons.length > 0 && !seasonId) {
-    const activeSeason = seasons.find(s => s.isActive) || seasons[0];
-    setSeasonId(activeSeason.id);
-  }
+  useEffect(() => {
+    if (seasons && seasons.length > 0 && !seasonId) {
+      const activeSeason = seasons.find(s => s.isActive) || seasons[0];
+      setSeasonId(activeSeason.id);
+    }
+  }, [seasons, seasonId, setSeasonId]);
 
-  if (markets && markets.length > 0 && !marketId) {
-    setMarketId(markets[0].id);
-  }
+  useEffect(() => {
+    if (markets && markets.length > 0 && !marketId) {
+      setMarketId(markets[0].id);
+    }
+  }, [markets, marketId, setMarketId]);
 
   return (
     <div className="flex gap-4 items-center flex-wrap">

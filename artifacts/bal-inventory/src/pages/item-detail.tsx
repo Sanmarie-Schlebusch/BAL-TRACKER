@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useLocation, useParams } from "wouter";
 import { 
   useGetItem, 
@@ -15,11 +15,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { StatusBadge } from "@/components/status-badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, Edit, Trash2, Copy, Plus, X, Image as ImageIcon, History } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { CameraCapture } from "@/components/camera-capture";
+import { ChevronLeft, Edit, Trash2, Copy, Camera, History, Image as ImageIcon, Link } from "lucide-react";
 import { format } from "date-fns";
 import { useListMarkets, useListSeasons } from "@workspace/api-client-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ItemDetail() {
   const [, setLocation] = useLocation();
@@ -46,12 +48,54 @@ export default function ItemDetail() {
   const [dupTargetMarket, setDupTargetMarket] = useState<string>("");
 
   const [addPhotoOpen, setAddPhotoOpen] = useState(false);
-  const [newPhotoUrl, setNewPhotoUrl] = useState("");
-  const [newPhotoCaption, setNewPhotoCaption] = useState("");
+  const [photoMode, setPhotoMode] = useState<"camera" | "url">("camera");
+  const [urlInput, setUrlInput] = useState("");
+  const [captionInput, setCaptionInput] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  if (isLoading || !item) {
-    return <div className="p-8 text-center text-muted-foreground">Loading item...</div>;
-  }
+  const resetPhotoDialog = () => {
+    setUrlInput("");
+    setCaptionInput("");
+    setPhotoMode("camera");
+  };
+
+  const savePhoto = useCallback(async (url: string, caption?: string) => {
+    addPhoto.mutate({ id: itemId, data: { url, caption: caption || captionInput || undefined } }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetItemQueryKey(itemId) });
+        setAddPhotoOpen(false);
+        resetPhotoDialog();
+        toast({ title: "Photo added successfully" });
+      },
+      onError: () => toast({ title: "Failed to add photo", variant: "destructive" }),
+    });
+  }, [addPhoto, captionInput, itemId, queryClient, toast]);
+
+  const handleCameraCapture = useCallback(async (dataUrl: string) => {
+    setUploading(true);
+    try {
+      const blob = await (await fetch(dataUrl)).blob();
+      const formData = new FormData();
+      formData.append("photo", blob, "photo.jpg");
+
+      const res = await fetch("/api/uploads", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json() as { url: string };
+      await savePhoto(url);
+    } catch {
+      toast({ title: "Upload failed", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  }, [savePhoto, toast]);
+
+  const handleAddPhotoByUrl = () => {
+    if (!urlInput.trim()) {
+      toast({ title: "Please enter a photo URL", variant: "destructive" });
+      return;
+    }
+    savePhoto(urlInput.trim());
+  };
 
   const handleDelete = () => {
     deleteItem.mutate({ id: itemId }, {
@@ -81,22 +125,6 @@ export default function ItemDetail() {
     });
   };
 
-  const handleAddPhoto = () => {
-    if (!newPhotoUrl) {
-      toast({ title: "Please enter a photo URL", variant: "destructive" });
-      return;
-    }
-    addPhoto.mutate({ id: itemId, data: { url: newPhotoUrl, caption: newPhotoCaption } }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getGetItemQueryKey(itemId) });
-        setAddPhotoOpen(false);
-        setNewPhotoUrl("");
-        setNewPhotoCaption("");
-        toast({ title: "Photo added" });
-      }
-    });
-  };
-
   const handleDeletePhoto = (photoId: number) => {
     deletePhoto.mutate({ id: itemId, photoId }, {
       onSuccess: () => {
@@ -105,6 +133,10 @@ export default function ItemDetail() {
       }
     });
   };
+
+  if (isLoading || !item) {
+    return <div className="p-8 text-center text-muted-foreground">Loading item...</div>;
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300 max-w-5xl mx-auto pb-20">
@@ -123,7 +155,7 @@ export default function ItemDetail() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" onClick={() => setLocation(`/inventory/${itemId}/edit`)}>
             <Edit className="w-4 h-4 mr-2" /> Edit
           </Button>
@@ -229,33 +261,80 @@ export default function ItemDetail() {
             </CardContent>
           </Card>
 
+          {/* Photos */}
           <Card className="bg-card border-card-border">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Photos</CardTitle>
-              <Dialog open={addPhotoOpen} onOpenChange={setAddPhotoOpen}>
+              <Dialog open={addPhotoOpen} onOpenChange={(open) => { setAddPhotoOpen(open); if (!open) resetPhotoDialog(); }}>
                 <DialogTrigger asChild>
                   <Button variant="outline" size="sm">
-                    <Plus className="w-4 h-4 mr-2" /> Add Photo
+                    <Camera className="w-4 h-4 mr-2" /> Add Photo
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-card">
+                <DialogContent className="bg-card max-w-lg">
                   <DialogHeader>
                     <DialogTitle>Add Photo</DialogTitle>
                   </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label>Image URL</Label>
-                      <Input value={newPhotoUrl} onChange={e => setNewPhotoUrl(e.target.value)} placeholder="https://..." />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Caption (Optional)</Label>
-                      <Input value={newPhotoCaption} onChange={e => setNewPhotoCaption(e.target.value)} placeholder="Description..." />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="ghost" onClick={() => setAddPhotoOpen(false)}>Cancel</Button>
-                    <Button onClick={handleAddPhoto} disabled={addPhoto.isPending}>Add Photo</Button>
-                  </DialogFooter>
+
+                  <Tabs value={photoMode} onValueChange={(v) => setPhotoMode(v as "camera" | "url")}>
+                    <TabsList className="w-full">
+                      <TabsTrigger value="camera" className="flex-1">
+                        <Camera className="w-4 h-4 mr-2" /> Camera / Upload
+                      </TabsTrigger>
+                      <TabsTrigger value="url" className="flex-1">
+                        <Link className="w-4 h-4 mr-2" /> From URL
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="camera" className="mt-4">
+                      {uploading ? (
+                        <div className="flex items-center justify-center h-40 text-muted-foreground">
+                          <div className="text-center space-y-2">
+                            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                            <p className="text-sm">Uploading photo…</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <CameraCapture
+                          onCapture={handleCameraCapture}
+                          onCancel={() => setAddPhotoOpen(false)}
+                        />
+                      )}
+                      {!uploading && (
+                        <div className="mt-3 space-y-2">
+                          <Label>Caption (Optional)</Label>
+                          <Input
+                            value={captionInput}
+                            onChange={e => setCaptionInput(e.target.value)}
+                            placeholder="e.g. Front view before event"
+                          />
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="url" className="mt-4 space-y-4">
+                      <div className="space-y-2">
+                        <Label>Image URL</Label>
+                        <Input
+                          value={urlInput}
+                          onChange={e => setUrlInput(e.target.value)}
+                          placeholder="https://..."
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Caption (Optional)</Label>
+                        <Input
+                          value={captionInput}
+                          onChange={e => setCaptionInput(e.target.value)}
+                          placeholder="e.g. Front view before event"
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button variant="ghost" onClick={() => setAddPhotoOpen(false)}>Cancel</Button>
+                        <Button onClick={handleAddPhotoByUrl} disabled={addPhoto.isPending}>Add Photo</Button>
+                      </DialogFooter>
+                    </TabsContent>
+                  </Tabs>
                 </DialogContent>
               </Dialog>
             </CardHeader>
@@ -271,7 +350,9 @@ export default function ItemDetail() {
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </div>
-                        {photo.caption && <p className="text-white text-xs text-center font-medium bg-black/50 p-1 rounded">{photo.caption}</p>}
+                        {photo.caption && (
+                          <p className="text-white text-xs text-center font-medium bg-black/50 p-1 rounded">{photo.caption}</p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -280,6 +361,7 @@ export default function ItemDetail() {
                 <div className="text-center py-8 text-muted-foreground border-2 border-dashed border-border rounded-lg">
                   <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>No photos attached</p>
+                  <p className="text-xs mt-1 opacity-60">Use "Add Photo" to capture or upload an image</p>
                 </div>
               )}
             </CardContent>
@@ -296,7 +378,7 @@ export default function ItemDetail() {
             <CardContent>
               <div className="space-y-6 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-border before:to-transparent">
                 {item.history && item.history.length > 0 ? (
-                  item.history.map((hist, i) => (
+                  item.history.map((hist) => (
                     <div key={hist.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
                       <div className="flex items-center justify-center w-5 h-5 rounded-full border border-primary bg-card text-primary shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow z-10">
                         <div className="w-2 h-2 rounded-full bg-primary" />
