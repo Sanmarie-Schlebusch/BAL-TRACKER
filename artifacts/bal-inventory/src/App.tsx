@@ -13,6 +13,7 @@ import Comparison from "@/pages/comparison";
 import Reports from "@/pages/reports";
 import ItemForm from "@/pages/item-form";
 import ItemDetail from "@/pages/item-detail";
+import Settings from "@/pages/settings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ function Router() {
         <Route path="/inventory/:id/edit" component={ItemForm} />
         <Route path="/comparison" component={Comparison} />
         <Route path="/reports" component={Reports} />
+        <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

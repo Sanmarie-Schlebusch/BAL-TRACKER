@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Package, ArrowRightLeft, FileText, Menu, X } from "lucide-react";
+import { LayoutDashboard, Package, ArrowRightLeft, FileText, Settings, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 
@@ -22,6 +22,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <h1 className="text-xl font-bold tracking-tight text-primary">BAL Tracker</h1>
           <p className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">Event Operations</p>
         </div>
+
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -42,6 +43,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+
+        {/* Settings pinned at bottom */}
+        <div className="p-4 border-t border-border">
+          <Link href="/settings">
+            <div
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-colors ${
+                location.startsWith("/settings")
+                  ? "bg-primary text-primary-foreground font-semibold"
+                  : "hover:bg-muted text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Settings className="w-5 h-5" />
+              <span>Settings</span>
+            </div>
+          </Link>
+        </div>
       </aside>
 
       {/* Mobile Top Bar */}
@@ -54,8 +71,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-16 bg-background z-40 p-4">
-          <nav className="flex flex-col space-y-2">
+        <div className="md:hidden fixed inset-0 top-16 bg-background z-40 p-4 flex flex-col">
+          <nav className="flex flex-col space-y-2 flex-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.startsWith(item.href);
@@ -76,6 +93,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
               );
             })}
           </nav>
+          {/* Settings at bottom of mobile menu */}
+          <Link href="/settings">
+            <div
+              onClick={() => setIsMobileMenuOpen(false)}
+              className={`flex items-center gap-3 px-4 py-4 rounded-lg cursor-pointer text-lg border-t border-border mt-2 ${
+                location.startsWith("/settings")
+                  ? "bg-primary text-primary-foreground font-bold"
+                  : "hover:bg-muted text-muted-foreground"
+              }`}
+            >
+              <Settings className="w-6 h-6" />
+              <span>Settings</span>
+            </div>
+          </Link>
         </div>
       )}
 
@@ -85,8 +116,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
-
-      {/* Mobile Bottom Nav (Optional, sticking with top bar menu for now) */}
     </div>
   );
 }
