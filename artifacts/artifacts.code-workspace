@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../attached_assets"
+		},
+		{
+			"path": "../BAL-TRACKER"
+		},
+		{
+			"path": "../lib"
+		},
+		{
+			"path": "../scripts"
+		}
+	],
+	"settings": {}
+}

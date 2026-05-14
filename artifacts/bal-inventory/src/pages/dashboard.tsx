@@ -39,6 +39,9 @@ export default function Dashboard() {
     { title: "Stored", value: summary.storedItems },
   ];
 
+  const statusBreakdown = Array.isArray(summary.statusBreakdown) ? summary.statusBreakdown : [];
+  const recentActivity = Array.isArray(summary.recentActivity) ? summary.recentActivity : [];
+
   return (
     <div className="space-y-6 animate-in fade-in zoom-in duration-300">
       <div className="flex flex-col gap-4">
@@ -68,7 +71,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {summary.statusBreakdown.map((status) => (
+              {statusBreakdown.map((status) => (
                 <div key={status.status} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <StatusBadge status={status.status} />
@@ -86,7 +89,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {summary.recentActivity.map((activity) => (
+              {recentActivity.map((activity) => (
                 <div key={activity.id} className="flex gap-4">
                   <div className="w-2 h-2 mt-2 rounded-full bg-primary shrink-0" />
                   <div className="flex-1">
@@ -108,7 +111,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               ))}
-              {summary.recentActivity.length === 0 && (
+              {recentActivity.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">No recent activity</div>
               )}
             </div>

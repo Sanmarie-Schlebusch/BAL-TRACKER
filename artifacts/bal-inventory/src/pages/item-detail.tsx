@@ -42,6 +42,9 @@ export default function ItemDetail() {
   const { data: markets } = useListMarkets();
   const { data: seasons } = useListSeasons();
 
+  const marketsData = Array.isArray(markets) ? markets : [];
+  const seasonsData = Array.isArray(seasons) ? seasons : [];
+
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [duplicateOpen, setDuplicateOpen] = useState(false);
   const [dupTargetSeason, setDupTargetSeason] = useState<string>("");
@@ -176,7 +179,7 @@ export default function ItemDetail() {
                   <Select value={dupTargetSeason} onValueChange={setDupTargetSeason}>
                     <SelectTrigger><SelectValue placeholder="Select Season" /></SelectTrigger>
                     <SelectContent>
-                      {seasons?.map(s => <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>)}
+                      {seasonsData.map(s => <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -185,7 +188,7 @@ export default function ItemDetail() {
                   <Select value={dupTargetMarket} onValueChange={setDupTargetMarket}>
                     <SelectTrigger><SelectValue placeholder="Select Market" /></SelectTrigger>
                     <SelectContent>
-                      {markets?.map(m => <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>)}
+                      {marketsData.map(m => <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>

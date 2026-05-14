@@ -9,8 +9,9 @@ import { StatusBadge } from "@/components/status-badge";
 export default function Comparison() {
   const { seasonId, setSeasonId } = useAppState();
   const { data: seasons } = useListSeasons();
+  const seasonsData = Array.isArray(seasons) ? seasons : [];
 
-  const activeSeasonId = seasonId || (seasons && seasons.length > 0 ? seasons[0].id : 0);
+  const activeSeasonId = seasonId || (seasonsData.length > 0 ? seasonsData[0].id : 0);
 
   const { data: comparison, isLoading } = useGetMarketComparison({ seasonId: activeSeasonId || 0 }, { query: { enabled: !!activeSeasonId, queryKey: ["market-comparison", activeSeasonId] } });
 
@@ -28,7 +29,7 @@ export default function Comparison() {
               <SelectValue placeholder="Select Season" />
             </SelectTrigger>
             <SelectContent>
-              {seasons?.map(season => (
+              {seasonsData.map(season => (
                 <SelectItem key={season.id} value={season.id.toString()}>{season.label}</SelectItem>
               ))}
             </SelectContent>

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { ChevronLeft } from "lucide-react";
@@ -41,6 +42,8 @@ const formSchema = z.object({
   isGeneric: z.boolean().default(false),
   supplierId: z.coerce.number().optional().nullable(),
   storageLocationId: z.coerce.number().optional().nullable(),
+  updatedBy: z.string().min(1, "Logger name is required"),
+  trackingNumber: z.string().optional(),
   notes: z.string().optional(),
 });
 
@@ -59,11 +62,18 @@ export default function ItemForm() {
   const { data: departments } = useListDepartments();
   const { data: seasons } = useListSeasons();
   const { data: markets } = useListMarkets();
+
+  const seasonsData = Array.isArray(seasons) ? seasons : [];
+  const marketsData = Array.isArray(markets) ? markets : [];
   const { data: suppliers } = useListSuppliers();
   const { data: storageLocations } = useListStorageLocations();
 
   const createItem = useCreateItem();
   const updateItem = useUpdateItem();
+
+  const [people, setPeople] = useState<string[]>([]);
+  const [addLoggerOpen, setAddLoggerOpen] = useState(false);
+  const [newLoggerName, setNewLoggerName] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -81,6 +91,8 @@ export default function ItemForm() {
       isGeneric: false,
       supplierId: null,
       storageLocationId: null,
+      updatedBy: "",
+      trackingNumber: "",
       notes: "",
     },
   });
@@ -101,16 +113,23 @@ export default function ItemForm() {
         isGeneric: item.isGeneric,
         supplierId: item.supplierId || null,
         storageLocationId: item.storageLocationId || null,
+        updatedBy: item.updatedBy || "",
+        trackingNumber: item.trackingNumber || "",
         notes: item.notes || "",
       });
+
+      if (item.updatedBy && !people.includes(item.updatedBy)) {
+        setPeople(prev => [...prev, item.updatedBy]);
+      }
     }
-  }, [item, isNew, form]);
+  }, [item, isNew, form, people]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const payload = {
       ...values,
       supplierId: values.supplierId || undefined,
       storageLocationId: values.storageLocationId || undefined,
+      trackingNumber: values.trackingNumber?.trim() || undefined,
     };
 
     if (isNew) {
@@ -210,7 +229,7 @@ export default function ItemForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {seasons?.map(s => (
+                          {seasonsData.map(s => (
                             <SelectItem key={s.id} value={s.id.toString()}>{s.label}</SelectItem>
                           ))}
                         </SelectContent>
@@ -233,11 +252,51 @@ export default function ItemForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {markets?.map(m => (
+                          {marketsData.map(m => (
                             <SelectItem key={m.id} value={m.id.toString()}>{m.name}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="updatedBy"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Logged By</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) => {
+                          if (value === "__ADD_NEW_LOGGER__") {
+                            setAddLoggerOpen(true);
+                            return;
+                          }
+                          field.onChange(value);
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-background">
+                            <SelectValue placeholder="Select logger" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {people.length > 0 ? (
+                            people.map(name => (
+                              <SelectItem key={name} value={name}>{name}</SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="" disabled>
+                              No logger names yet
+                            </SelectItem>
+                          )}
+                          <SelectItem value="__ADD_NEW_LOGGER__">+ Add new name</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>Add the person logging this item.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -440,6 +499,21 @@ export default function ItemForm() {
 
               <FormField
                 control={form.control}
+                name="trackingNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tracking Number</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Optional tracking number" className="bg-background" {...field} />
+                    </FormControl>
+                    <FormDescription>Enter a shipment or tracking reference for this item.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
@@ -459,6 +533,41 @@ export default function ItemForm() {
           </Button>
         </form>
       </Form>
+
+      <Dialog open={addLoggerOpen} onOpenChange={(open) => { setAddLoggerOpen(open); if (!open) setNewLoggerName(""); }}>
+        <DialogContent className="bg-card">
+          <DialogHeader>
+            <DialogTitle>Add Logger Name</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input
+                  value={newLoggerName}
+                  onChange={(e) => setNewLoggerName(e.target.value)}
+                  placeholder="e.g. Jordan Smith"
+                />
+              </FormControl>
+            </FormItem>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setAddLoggerOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                const trimmed = newLoggerName.trim();
+                if (!trimmed) return;
+                setPeople(prev => prev.includes(trimmed) ? prev : [...prev, trimmed]);
+                form.setValue("updatedBy", trimmed);
+                setNewLoggerName("");
+                setAddLoggerOpen(false);
+              }}
+            >
+              Add Name
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

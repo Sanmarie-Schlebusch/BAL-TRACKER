@@ -10,18 +10,21 @@ export function ContextSelector() {
   const { data: seasons, isLoading: loadingSeasons } = useListSeasons();
   const { data: markets, isLoading: loadingMarkets } = useListMarkets();
 
-  useEffect(() => {
-    if (seasons && seasons.length > 0 && !seasonId) {
-      const activeSeason = seasons.find(s => s.isActive) || seasons[0];
-      setSeasonId(activeSeason.id);
-    }
-  }, [seasons, seasonId, setSeasonId]);
+  const seasonsData = Array.isArray(seasons) ? seasons : [];
+  const marketsData = Array.isArray(markets) ? markets : [];
 
   useEffect(() => {
-    if (markets && markets.length > 0 && !marketId) {
-      setMarketId(markets[0].id);
+    if (seasonsData.length > 0 && !seasonId) {
+      const activeSeason = seasonsData.find(s => s.isActive) || seasonsData[0];
+      setSeasonId(activeSeason.id);
     }
-  }, [markets, marketId, setMarketId]);
+  }, [seasonsData, seasonId, setSeasonId]);
+
+  useEffect(() => {
+    if (marketsData.length > 0 && !marketId) {
+      setMarketId(marketsData[0].id);
+    }
+  }, [marketsData, marketId, setMarketId]);
 
   return (
     <div className="flex gap-4 items-center flex-wrap">
@@ -38,7 +41,7 @@ export function ContextSelector() {
               <SelectValue placeholder="Select Season" />
             </SelectTrigger>
             <SelectContent>
-              {seasons?.map(season => (
+              {seasonsData.map(season => (
                 <SelectItem key={season.id} value={season.id.toString()}>{season.label}</SelectItem>
               ))}
             </SelectContent>
@@ -60,7 +63,7 @@ export function ContextSelector() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="0">All Markets</SelectItem>
-              {markets?.map(market => (
+              {marketsData.map(market => (
                 <SelectItem key={market.id} value={market.id.toString()}>{market.name}</SelectItem>
               ))}
             </SelectContent>
